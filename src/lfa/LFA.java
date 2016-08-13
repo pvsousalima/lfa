@@ -35,7 +35,6 @@ public class LFA {
             // parser da entrada de dados
             InputParser parser = new InputParser();
             parser.parseInput(input);
-
         }
 
     }
