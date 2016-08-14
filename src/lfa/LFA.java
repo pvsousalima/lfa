@@ -42,13 +42,18 @@ public class LFA {
                 System.out.println("Automato invalido");
                 return;
             } else {
-                for (int i = 0; i < automato.size(); i++) {
-                    System.out.println(automato.get(i));
-                }
+//                for (int i = 0; i < automato.size(); i++) {
+//                    System.out.println(automato.get(i));
+//                }
             }
             
+            // parser para o automato (pegar transicoes e estados)
             AutomataParser ap = new AutomataParser();
-            ap.getStates(automato);
+            String[] estados = ap.getStates(automato);
+            
+            
+            
+            ap.move(estados, automato.get(0), automato.get(1));
 
         }
 
