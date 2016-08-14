@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 /**
  *
@@ -34,7 +35,21 @@ public class LFA {
 
             // parser da entrada de dados
             InputParser parser = new InputParser();
-            parser.parseInput(input);
+            ArrayList<String> automato = parser.parseInput(input);
+
+            // verifica o tamanho do automato
+            if (automato.size() != 5) {
+                System.out.println("Automato invalido");
+                return;
+            } else {
+                for (int i = 0; i < automato.size(); i++) {
+                    System.out.println(automato.get(i));
+                }
+            }
+            
+            AutomataParser ap = new AutomataParser();
+            ap.getStates(automato);
+
         }
 
     }
@@ -42,8 +57,7 @@ public class LFA {
     // le um arquivo e o transforma em string
     public String readFile(String path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding);
-
+        return new String(encoded, encoding); // retorna a string
     }
 
 }

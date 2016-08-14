@@ -5,6 +5,7 @@
  */
 package lfa;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,27 +25,31 @@ public class InputParser {
     }
 
     // parse na entrada de dados
-    public String parseInput(String input) {
+    public ArrayList<String>  parseInput(String input) {
 
         // remove spaces and line breaker
         input = input.replace("\n", "");
         input = input.replace(" ", "");
 
-        
         System.out.println("Automato apos processamento:");
         System.out.println(input);
 
         System.out.println("");
-        
+
         // compilando padrao a ser encontrado no automato
-        Pattern pattern = Pattern.compile("(\\{[a-zA-Z0-9,]+\\}|\\{\\(.*\\}\\}|[a-zA-Z0-9]+)");
+        Pattern pattern = Pattern.compile("(\\{[a-zA-Z0-9,]+\\}|\\{\\(.*\\}\\}|[a-zA-Z0-9\\{\\}}]+)");
         Matcher matcher = pattern.matcher(input);
 
-        
         System.out.println("Componentes separados do automato:");
+
+        // automato com seus componentes
+        ArrayList<String> automato = new ArrayList<>();
+
+        // pega os grupos que deram match
         while (matcher.find()) {
-            System.out.println(matcher.group());
+            automato.add(matcher.group());
         }
-        return "";
+
+        return automato;
     }
 }
