@@ -32,14 +32,9 @@ public class InputParser {
         input = input.replaceAll("\t", "");
         input = input.replaceAll(" ", "");
 
-//        System.out.println("Automato apos processamento:");
-//        System.out.println(input);
-
         // compilando padrao a ser encontrado no automato
         Pattern pattern = Pattern.compile("(\\{[a-zA-Z0-9,]+\\}|\\{\\(.*\\}\\}|[a-zA-Z0-9\\{\\}}]+)");
         Matcher matcher = pattern.matcher(input);
-
-//        System.out.println("Componentes separados do automato:");
 
         // automato com seus componentes
         ArrayList<String> automato = new ArrayList<>();

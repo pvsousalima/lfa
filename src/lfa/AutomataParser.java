@@ -42,32 +42,48 @@ public class AutomataParser {
         return estados;
     }
 
-    // obtem os estados de um automato definido
+    // obtem a tabela do automato
     public void getTableLambda(String estados, Map<String, String> transicoes, String alfabeto) {
 
-        ArrayList<String> alfa = new ArrayList<>(Arrays.asList(alfabeto.split("[,}{]")));
+        alfabeto = alfabeto.replace("{", "");
+        alfabeto = alfabeto.replace("}", "");
+
+        ArrayList<String> alfa = new ArrayList<>(Arrays.asList(alfabeto.split(",")));
         alfa.add(".");
 
-        System.out.printf("AFND−λ");
+        System.out.format("%-20s", "δND−λ");
         for (String letra : alfa) {
             if (letra.equals(".")) {
-                System.out.format("%6s", "λ");
+                System.out.format("%-15s", "λ");
             } else {
-                System.out.format("%5s  ", letra);
+                System.out.format("%-20s", letra);
             }
         }
 
-        for (String estado : estados.split("[,}{]")) {
-            System.out.printf(estado);
+        System.out.println("");
+
+        estados = estados.replace("{", "");
+        estados = estados.replace("}", "");
+        for (String estado : estados.split(",")) {
+            System.out.format("%-20s", estado);
             for (String letra : alfa) {
+
                 String walk = doMove(transicoes, estado, letra);
-                System.out.format("%8s", walk);
+                StringBuilder sb = new StringBuilder();
+                if (walk.isEmpty()) {
+                    sb.append("∅");
+                } else {
+                    sb.insert(0, "{");
+                    sb.append(walk);
+                    sb.append("}");
+                }
+                System.out.format("%-20s", sb.toString());
             }
             System.out.println("");
         }
     }
 
-    // mapeia o movimento para o retorno e pega o destino do movimento
+    // mapeia o movimento para os estados, pega o destino do movimento
     public String doMove(Map<String, String> transicoes, String state, String word) {
         String destination = "";
         for (Entry<String, String> e : transicoes.entrySet()) {
@@ -75,23 +91,7 @@ public class AutomataParser {
                 destination = transicoes.get(e.getKey());
             }
         }
-
         return destination;
-    }
-
-    public void getTableAFND(String estado, String palavra, CopyOnWriteArrayList<String> result) {
-
-        System.out.format("%6s  ", estado);
-        System.out.println("\n");
-
-        System.out.printf("AFND");
-//        for (String letra : alfa) {
-//            System.out.format("%6s  ", letra);
-//        }
-    }
-
-    public void getTableAFD() {
-
     }
 
     // Pega o fecho lambda 
@@ -145,6 +145,7 @@ public class AutomataParser {
         // formata os estados
         String[] estados = formateStates(states);
 
+        // fecho lambda de um dado estado, mapeado como uma hashmap
         Map<String, ArrayList<String>> fechoHash = new HashMap<>();
 
         System.out.println("");
@@ -163,12 +164,7 @@ public class AutomataParser {
             // ordena a lista
             fecho.sort((String estado1, String estado2) -> estado1.compareTo(estado2));
 
-//            System.out.printf("Fecho para: " + estado + "-> ");
-//            for (String el : fecho) {
-//                System.out.printf(el + " ");
-//            }
-//            System.out.println("");
-            // salva o fecho relativo ao 
+            // salva o fecho relativo ao estado
             fechoHash.put(estado, fecho);
         }
 
@@ -227,7 +223,6 @@ public class AutomataParser {
 
             }
         }
-
     }
 
     // converte para AFND
@@ -239,15 +234,15 @@ public class AutomataParser {
         // pega os estados do automato
         String[] estados = formateStates(states);
 
-        System.out.printf("AFND");
+        System.out.format("%-20s", "δND");
         for (String word : words) {
-            System.out.format("%13s", word);
+            System.out.format("%-40s", word);
         }
         System.out.println("");
 
         for (String estado : estados) {
 
-            System.out.printf(estado);
+            System.out.format("%-10s", estado);
 
             // pega o fecho do estado
             ArrayList<String> fechoEstado = hashLambda.get(estado);
@@ -273,24 +268,27 @@ public class AutomataParser {
 
                 result = formatFecho(result);
 
-                System.out.printf(" ");
+                System.out.format("%-10s", "");
                 StringBuilder sb = new StringBuilder();
                 for (String res : result) {
                     sb.append(res);
+                    sb.append(",");
                 }
-
                 if (sb.toString().isEmpty()) {
-                    System.out.format("%12s", "∅");
+                    System.out.format("%-30s", "∅");
                 } else {
                     sb.insert(0, "{");
                     sb.append("}");
-                    System.out.format("%15s", sb.toString());
-
+                    System.out.format("%-30s", sb.toString().replaceAll("\\s", "").replaceAll("\\{,", "\\{").replaceAll(",\\}", "}"));
                 }
-
             }
             System.out.println("");
         }
+    }
+
+    // converte para AFD
+    public void converteAFD() {
+
     }
 
     // realiza movimentos
@@ -316,11 +314,9 @@ public class AutomataParser {
         // converte para AFND
         converteAFND(transicoes, hashLambda, estados, alfabeto);
 
-//        // tabela do AFND
-//        getTableAFND(alfabeto);
-//
-//        // tabela do AFD
-//        getTableAFD();
+        // tabela do AFND
+        converteAFD();
+
     }
 
 }

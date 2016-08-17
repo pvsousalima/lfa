@@ -37,23 +37,17 @@ public class LFA {
             InputParser parser = new InputParser();
             ArrayList<String> automato = parser.parseInput(input);
 
-//             for (int i = 0; i < automato.size(); i++) {
-//                    System.out.println(automato.get(i));
-//                }
-            
             // verifica o tamanho do automato
             if (automato.size() != 5) {
                 System.out.println("Automato invalido");
                 return;
-            } else {
-//                for (int i = 0; i < automato.size(); i++) {
-//                    System.out.println(automato.get(i));
-//                }
             }
 
             // parser para o automato (pegar transicoes e estados)
             AutomataParser ap = new AutomataParser();
             String[] estados = ap.getStates(automato);
+
+            // monta o automato e extrai os dados e faz as conversoes  
             ap.mount(estados, automato.get(0), automato.get(1));
         }
 
@@ -62,7 +56,7 @@ public class LFA {
     // le um arquivo e o transforma em string
     public String readFile(String path, Charset encoding) throws IOException {
         byte[] encoded = Files.readAllBytes(Paths.get(path));
-        return new String(encoded, encoding); // retorna a string
+        return new String(encoded, encoding); 
     }
 
 }
