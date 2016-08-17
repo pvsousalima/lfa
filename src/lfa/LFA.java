@@ -37,6 +37,10 @@ public class LFA {
             InputParser parser = new InputParser();
             ArrayList<String> automato = parser.parseInput(input);
 
+//             for (int i = 0; i < automato.size(); i++) {
+//                    System.out.println(automato.get(i));
+//                }
+            
             // verifica o tamanho do automato
             if (automato.size() != 5) {
                 System.out.println("Automato invalido");

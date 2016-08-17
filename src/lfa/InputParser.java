@@ -25,16 +25,15 @@ public class InputParser {
     }
 
     // parse na entrada de dados
-    public ArrayList<String>  parseInput(String input) {
+    public ArrayList<String> parseInput(String input) {
 
         // remove spaces and line breaker
-        input = input.replace("\n", "");
-        input = input.replace(" ", "");
+        input = input.replaceAll("\n", "");
+        input = input.replaceAll("\t", "");
+        input = input.replaceAll(" ", "");
 
 //        System.out.println("Automato apos processamento:");
 //        System.out.println(input);
-//
-//        System.out.println("");
 
         // compilando padrao a ser encontrado no automato
         Pattern pattern = Pattern.compile("(\\{[a-zA-Z0-9,]+\\}|\\{\\(.*\\}\\}|[a-zA-Z0-9\\{\\}}]+)");
