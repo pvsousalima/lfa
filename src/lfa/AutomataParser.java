@@ -79,15 +79,15 @@ public class AutomataParser {
         return destination;
     }
 
-    public void getTableAFND(String alfabeto) {
+    public void getTableAFND(String estado, String palavra, CopyOnWriteArrayList<String> result) {
 
+        System.out.format("%6s  ", estado);
         System.out.println("\n");
-        ArrayList<String> alfa = new ArrayList<>(Arrays.asList(alfabeto.split("[,}{]")));
 
         System.out.printf("AFND");
-        for (String letra : alfa) {
-            System.out.format("%6s  ", letra);
-        }
+//        for (String letra : alfa) {
+//            System.out.format("%6s  ", letra);
+//        }
     }
 
     public void getTableAFD() {
@@ -116,14 +116,11 @@ public class AutomataParser {
         fecho.stream().forEach((state) -> {
             for (String e : state.split(",")) {
                 if (!l2.contains(e)) {
-//                    e = e.replaceAll("q", "");
                     l2.add(e);
                 }
             }
         });
-
         return l2;
-
     }
 
     // formata a saida do lambda
@@ -133,7 +130,6 @@ public class AutomataParser {
         fecho.stream().forEach((state) -> {
             for (String e : state.split(",")) {
                 if (!l2.contains(e)) {
-//                    e = e.replaceAll("q", "");
                     l2.add(e);
                 }
             }
@@ -167,12 +163,11 @@ public class AutomataParser {
             // ordena a lista
             fecho.sort((String estado1, String estado2) -> estado1.compareTo(estado2));
 
-            System.out.printf("Fecho para: " + estado + "-> ");
-            for (String el : fecho) {
-                System.out.printf(el + " ");
-            }
-            System.out.println("");
-
+//            System.out.printf("Fecho para: " + estado + "-> ");
+//            for (String el : fecho) {
+//                System.out.printf(el + " ");
+//            }
+//            System.out.println("");
             // salva o fecho relativo ao 
             fechoHash.put(estado, fecho);
         }
@@ -207,8 +202,8 @@ public class AutomataParser {
         return words;
     }
 
+    // pega os conjuntos de estados dentro da tabela do AFND
     public void getMoveFecho(Map<String, ArrayList<String>> hashLambda, Map<String, String> transicoes, String est, String word, CopyOnWriteArrayList<String> result) {
-
         if (est.isEmpty()) {
             result.clear();
         } else {
@@ -244,7 +239,15 @@ public class AutomataParser {
         // pega os estados do automato
         String[] estados = formateStates(states);
 
+        System.out.printf("AFND");
+        for (String word : words) {
+            System.out.format("%13s", word);
+        }
+        System.out.println("");
+
         for (String estado : estados) {
+
+            System.out.printf(estado);
 
             // pega o fecho do estado
             ArrayList<String> fechoEstado = hashLambda.get(estado);
@@ -270,15 +273,24 @@ public class AutomataParser {
 
                 result = formatFecho(result);
 
-                System.out.println("Estado:" + estado);
-                System.out.printf("Transicao:" + word);
-                System.out.println(result);
-                System.out.println("");
+                System.out.printf(" ");
+                StringBuilder sb = new StringBuilder();
+                for (String res : result) {
+                    sb.append(res);
+                }
+
+                if (sb.toString().isEmpty()) {
+                    System.out.format("%12s", "∅");
+                } else {
+                    sb.insert(0, "{");
+                    sb.append("}");
+                    System.out.format("%15s", sb.toString());
+
+                }
 
             }
-
+            System.out.println("");
         }
-
     }
 
     // realiza movimentos
