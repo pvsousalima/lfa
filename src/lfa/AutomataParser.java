@@ -8,10 +8,10 @@ package lfa;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  *
@@ -66,7 +66,6 @@ public class AutomataParser {
             }
             System.out.println("");
         }
-
     }
 
     // mapeia o movimento para o retorno e pega o destino do movimento
@@ -77,11 +76,95 @@ public class AutomataParser {
                 destination = transicoes.get(e.getKey());
             }
         }
+
         return destination;
     }
 
+    public void getTableAFND(String alfabeto) {
+
+        System.out.println("\n");
+        ArrayList<String> alfa = new ArrayList<>(Arrays.asList(alfabeto.split("[,}{]")));
+
+        System.out.printf("AFND");
+        for (String letra : alfa) {
+            System.out.format("%6s  ", letra);
+        }
+    }
+
+    public void getTableAFD() {
+
+    }
+
+//    public ArrayList<String> recursiva(Map<String, String> transicoes, String word, String state, ArrayList<String> fecho) {
+//        String move = doMove(transicoes, state, word);
+//        if (fecho.indexOf(move) == -1) {
+//            fecho.add(move);
+//            state = move;
+//        } else {
+//            return fecho;
+//        }
+//        return recursiva(transicoes, word, state, fecho);
+//    }
+    public void fechoLambda(Map<String, String> transicoes, String states) {
+
+        // lambda
+        String word = ".";
+
+        states = states.replaceAll(" ", "");
+        states = states.replaceAll("\\{", "");
+        states = states.replaceAll("\\}", "");
+
+        // pega o conjunto de estados
+        String[] estados = states.split(",");
+
+        // para cada estado
+        for (String estado : estados) {
+
+            // crie uma lista contendo o fecho lambda
+            CopyOnWriteArrayList<String> fecho = new CopyOnWriteArrayList<>();
+
+            // adicione o proprio estado
+            fecho.add(estado);
+
+            // fecho = recursiva(transicoes, word, doMove(transicoes, estado, word), fecho);
+            while (!doMove(transicoes, estado, word).isEmpty()) {
+                String estate = doMove(transicoes, estado, word);
+                String[] possibleMoves = estate.split(",");
+
+                if (possibleMoves.length == 1) {
+                    if (fecho.indexOf(estate) == -1) {
+                        fecho.add(estate);
+                        estado = estate;
+                    } else {
+                        break;
+                    }
+                } else {
+
+                    // computar a cadeia de cada estado
+                    for (String element : possibleMoves) {
+                       
+                    }
+
+                }
+
+                System.out.println("");
+                System.out.printf("fecho para " + fecho.get(0) + "-> ");
+                for (String string : fecho) {
+                    System.out.printf(string + " ");
+                }
+                System.out.println("");
+            }
+
+        }}
+
+    
+
+    public void converteAFND() {
+
+    }
+
     // realiza movimentos
-    public void move(String[] funcoes, String estados, String alfabeto) {
+    public void mount(String[] funcoes, String estados, String alfabeto) {
 
         // mapa das transicoes
         Map<String, String> transicoes = new HashMap<>();
@@ -89,11 +172,26 @@ public class AutomataParser {
         // mapeia os estados para as transicoes e simbolos
         for (String funcao : funcoes) {
             String[] result = funcao.split("->");
+            //        String estate = "q2";
+
+            result[1] = result[1].replaceAll("\\{", "");
+            result[1] = result[1].replaceAll("\\}", "");
+
             transicoes.put(result[0], result[1]);
         }
 
         // pega a tabela do lambda
         getTableLambda(estados, transicoes, alfabeto);
+
+        //pega o fecho do lambda
+        fechoLambda(transicoes, estados);
+
+        // tabela do AFND
+        getTableAFND(alfabeto);
+
+        // tabela do AFD
+        getTableAFD();
+
     }
 
 }

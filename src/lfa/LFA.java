@@ -46,15 +46,11 @@ public class LFA {
 //                    System.out.println(automato.get(i));
 //                }
             }
-            
+
             // parser para o automato (pegar transicoes e estados)
             AutomataParser ap = new AutomataParser();
             String[] estados = ap.getStates(automato);
-            
-            
-            
-            ap.move(estados, automato.get(0), automato.get(1));
-
+            ap.mount(estados, automato.get(0), automato.get(1));
         }
 
     }
