@@ -1,11 +1,13 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+** Linguagens Formais e Automatos - GCC 122
+** Turma: 10A
+** Alunos: Pedro Victor de Sousa Lima
+**         Gabriela Aparecida Santiago
+**         Raquel Barbosa Romao
  */
 package lfa;
 
-import java.util.AbstractMap;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,10 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- *
- * @author pvsousalima
- */
+
 public class AutomataParser {
 
     // remove a ultima ocorrencia de alguma substring
@@ -44,7 +43,7 @@ public class AutomataParser {
     }
 
     // obtem a tabela do automato
-    public void getTableLambda(String estados, Map<String, String> transicoes, String alfabeto) {
+    public void getTableLambda(String estados, Map<String, String> transicoes, String alfabeto, PrintWriter printwriter) {
 
         alfabeto = alfabeto.replace("{", "");
         alfabeto = alfabeto.replace("}", "");
@@ -52,21 +51,21 @@ public class AutomataParser {
         ArrayList<String> alfa = new ArrayList<>(Arrays.asList(alfabeto.split(",")));
         alfa.add(".");
 
-        System.out.format("%-20s", "δND−λ");
+        printwriter.format("%-20s", "δND−λ");
         for (String letra : alfa) {
             if (letra.equals(".")) {
-                System.out.format("%-15s", "λ");
+                printwriter.format("%-15s", "λ");
             } else {
-                System.out.format("%-20s", letra);
+                printwriter.format("%-20s", letra);
             }
         }
 
-        System.out.println("");
+        printwriter.format("");
 
         estados = estados.replace("{", "");
         estados = estados.replace("}", "");
         for (String estado : estados.split(",")) {
-            System.out.format("%-20s", estado);
+            printwriter.format("%-20s", estado);
             for (String letra : alfa) {
 
                 String walk = doMove(transicoes, estado, letra);
@@ -78,10 +77,12 @@ public class AutomataParser {
                     sb.append(walk);
                     sb.append("}");
                 }
-                System.out.format("%-20s", sb.toString());
+                printwriter.format("%-20s", sb.toString());
             }
-            System.out.println("");
+            printwriter.format("");
         }
+        printwriter.flush();
+
     }
 
     // mapeia o movimento para os estados, pega o destino do movimento
@@ -135,9 +136,7 @@ public class AutomataParser {
                 }
             }
         });
-
         return l2;
-
     }
 
     // retorna o fecho lambda como um hashmap
@@ -227,8 +226,9 @@ public class AutomataParser {
     }
 
     // converte para AFND
-    public Map<String, CopyOnWriteArrayList<String>> converteAFND(Map<String, String> transicoes, Map<String, ArrayList<String>> hashLambda, String states, String alfabeto) {
+    public Map<String, CopyOnWriteArrayList<String>> converteAFND(Map<String, String> transicoes, Map<String, ArrayList<String>> hashLambda, String states, String alfabeto, PrintWriter printwriter) {
 
+        printwriter.write("\n\n");
         // mapeando as transicoes do AFND
         Map<String, CopyOnWriteArrayList<String>> nfaMapping = new HashMap<>();
 
@@ -238,15 +238,15 @@ public class AutomataParser {
         // pega os estados do automato
         String[] estados = formateStates(states);
 
-        System.out.format("%-20s", "δND");
+        printwriter.format("%-10s", "δND");
         for (String word : words) {
-            System.out.format("%-40s", word);
+            printwriter.format("%-30s", word);
         }
-        System.out.println("");
+        printwriter.write("\n");
 
         for (String estado : estados) {
 
-            System.out.format("%-10s", estado);
+            printwriter.format("%-10s", estado);
 
             // pega o fecho do estado
             ArrayList<String> fechoEstado = hashLambda.get(estado);
@@ -284,17 +284,19 @@ public class AutomataParser {
                     sb.append(",");
                 }
                 if (sb.toString().isEmpty()) {
-                    System.out.format("%-30s", "∅");
+                    printwriter.format("%-30s", "∅");
                 } else {
                     sb.insert(0, "{");
                     sb.append("}");
-                    System.out.format("%-30s", sb.toString().replaceAll("\\s", "").replaceAll("\\{,", "\\{").replaceAll(",\\}", "}"));
+                    printwriter.format("%-30s", sb.toString().replaceAll("\\s", "").replaceAll("\\{,", "\\{").replaceAll(",\\}", "}"));
                 }
 
             }
-            System.out.println("");
+            printwriter.format("", "\n");
 
         }
+
+        printwriter.flush();
 
         return nfaMapping;
     }
@@ -305,13 +307,7 @@ public class AutomataParser {
         for (String key : mapaAFND.keySet()) {
             CopyOnWriteArrayList l = formatFecho(mapaAFND.get(key));
             mapaAFND.put(key, l);
-//            System.out.println(key + "->" + l);
         }
-//        System.out.println(mapaAFND);
-    }
-
-    public void getConjunto() {
-
     }
 
     // converte para AFD
@@ -327,7 +323,7 @@ public class AutomataParser {
         Map<String, CopyOnWriteArrayList> mapaAFD = new HashMap<>();
 
         // a lista de estados
-        ArrayList<String> estados = new ArrayList<>();
+        CopyOnWriteArrayList<String> estados = new CopyOnWriteArrayList<>();
 
         // tag do estado inicial
         StringBuilder tagInicial = new StringBuilder();
@@ -336,36 +332,89 @@ public class AutomataParser {
             tagInicial.append(estado).append(",");
         }
         tagInicial.append(">");
-//        estados.add(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">"));
+        estados.add(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">"));
 
-        // para o estado inicial
-        for (String estado : fechoLambdaInicial) {
+        for (String palavra : alfa) {
 
-            for (String palavra : alfa) {
+            // para o estado inicial
+            for (String estado : fechoLambdaInicial) {
 
                 CopyOnWriteArrayList<String> result = new CopyOnWriteArrayList<>();
 
+                // acumula as transicoes
                 if (!estado.isEmpty()) {
-
                     for (String est : mapaAFND.get(estado + palavra)) {
                         if (!est.isEmpty()) {
-                            result.add(est); // une as transicoes
+                            result.add(est);
                         }
                     }
-
-                    estados.add(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">"));
-                    mapaAFD.put(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">") + palavra, result);
+                    if (!result.isEmpty()) {
+                        mapaAFD.put(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">") + palavra, result);
+                    }
                 }
             }
         }
-        System.out.println(estados);
-        System.out.println(mapaAFD);
 
+//        System.out.println("");
+
+        for (String estado : estados) {
+
+            for (String palavra : alfa) {
+
+                // pega as transicoes do estado
+                CopyOnWriteArrayList<String> ests = mapaAFD.get(estado + palavra);
+
+                if (ests != null) {
+
+                    // tag do novo estado
+                    StringBuilder estadoTag = new StringBuilder();
+                    estadoTag.append("<");
+                    for (String es : ests) {
+                        estadoTag.append(es).append(",");
+                    }
+                    estadoTag.append(">");
+                    String newTag = estadoTag.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">");
+
+                    if (!estados.contains(newTag)) {
+                        estados.add(newTag);
+                    }
+
+                    CopyOnWriteArrayList<String> result = new CopyOnWriteArrayList<>();
+
+                    // para cada estado da lista de estados do AFD
+                    for (String e : ests) {
+
+                        for (String pal : alfa) {
+
+                            CopyOnWriteArrayList<String> al = mapaAFND.get(e + pal);
+
+                            for (String esta : al) {
+                                if (!esta.isEmpty()) {
+                                    result.add(esta);
+                                } else {
+                                    result.clear();
+                                }
+                            }
+
+//                            System.out.println(result);
+                            mapaAFD.put(newTag + palavra, new CopyOnWriteArrayList());
+
+                        }
+                    }
+
+                } else {
+                    mapaAFD.put(estado + palavra, new CopyOnWriteArrayList());
+                }
+
+            }
+        }
+//        System.out.println(estados);
 //        System.out.println(mapaAFD);
-    }
 
+    }
     // monta o automato e extrai os movimentos/transicoes e realiza as conversoes posteriores
-    public void mount(String[] funcoes, String estados, String alfabeto, String estadoInicial) {
+
+    public void mount(String[] funcoes, String estados, String alfabeto, String estadoInicial, PrintWriter writer) {
 
         // mapa das transicoes
         Map<String, String> transicoes = new HashMap<>();
@@ -379,17 +428,16 @@ public class AutomataParser {
         }
 
         // pega a tabela do lambda
-        getTableLambda(estados, transicoes, alfabeto);
+        getTableLambda(estados, transicoes, alfabeto, writer);
 
         //pega o fecho do lambda
         Map<String, ArrayList<String>> hashLambda = fechoLambda(transicoes, estados);
 
         // converte para AFND
-        Map<String, CopyOnWriteArrayList<String>> mapaAFND = converteAFND(transicoes, hashLambda, estados, alfabeto);
+        Map<String, CopyOnWriteArrayList<String>> mapaAFND = converteAFND(transicoes, hashLambda, estados, alfabeto, writer);
 
         // tabela do AFND
         converteAFD(mapaAFND, alfabeto, hashLambda.get(estadoInicial));
-
     }
 
 }

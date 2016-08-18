@@ -1,20 +1,20 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+** Linguagens Formais e Automatos - GCC 122
+** Turma: 10A
+** Alunos: Pedro Victor de Sousa Lima
+**         Gabriela Aparecida Santiago
+**         Raquel Barbosa Romao
  */
 package lfa;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-/**
- *
- * @author pvsousalima
- */
+
 public class LFA {
 
     /**
@@ -42,13 +42,15 @@ public class LFA {
                 System.out.println("Automato invalido");
                 return;
             }
-
+            
+            PrintWriter writer = new PrintWriter(args[1], "UTF-8");
+            
             // parser para o automato (pegar transicoes e estados)
             AutomataParser ap = new AutomataParser();
             String[] estados = ap.getStates(automato);
 
             // monta o automato e extrai os dados e faz as conversoes  
-            ap.mount(estados, automato.get(0), automato.get(1), automato.get(3));
+            ap.mount(estados, automato.get(0), automato.get(1), automato.get(3), writer);
         }
 
     }
