@@ -226,7 +226,10 @@ public class AutomataParser {
     }
 
     // converte para AFND
-    public void converteAFND(Map<String, String> transicoes, Map<String, ArrayList<String>> hashLambda, String states, String alfabeto) {
+    public Map<String, CopyOnWriteArrayList<String>> converteAFND(Map<String, String> transicoes, Map<String, ArrayList<String>> hashLambda, String states, String alfabeto) {
+
+        // mapeando as transicoes do AFND
+        Map<String, CopyOnWriteArrayList<String>> nfaMapping = new HashMap<>();
 
         // pega o alfabeto formatado
         String[] words = formateAlfabeto(alfabeto);
@@ -266,8 +269,13 @@ public class AutomataParser {
                     getMoveFecho(hashLambda, transicoes, est, word, result);
                 }
 
+                // realiza o mapeamento do AFND
+                nfaMapping.put(estado + word, result);
+
+                // resultado com o conjunto de estados que leem a palavra
                 result = formatFecho(result);
 
+                // impressao na saida
                 System.out.format("%-10s", "");
                 StringBuilder sb = new StringBuilder();
                 for (String res : result) {
@@ -281,13 +289,31 @@ public class AutomataParser {
                     sb.append("}");
                     System.out.format("%-30s", sb.toString().replaceAll("\\s", "").replaceAll("\\{,", "\\{").replaceAll(",\\}", "}"));
                 }
+
             }
             System.out.println("");
+
         }
+
+        return nfaMapping;
+    }
+
+    // remove os elementos repetidos de dentro do hashmap
+    public void clearHashMap(Map<String, CopyOnWriteArrayList<String>> mapaAFND) {
+
+        for (String key : mapaAFND.keySet()) {
+            CopyOnWriteArrayList l = formatFecho(mapaAFND.get(key));
+            mapaAFND.put(key, l);
+//            System.out.println(key + "->" + l);
+        }
+        System.out.println(mapaAFND);
     }
 
     // converte para AFD
-    public void converteAFD() {
+    public void converteAFD(Map<String, CopyOnWriteArrayList<String>> mapaAFND, String estadoInicial) {
+
+        // tira os elementos repetidos dos results do hash
+        clearHashMap(mapaAFND);
 
     }
 
@@ -312,10 +338,10 @@ public class AutomataParser {
         Map<String, ArrayList<String>> hashLambda = fechoLambda(transicoes, estados);
 
         // converte para AFND
-        converteAFND(transicoes, hashLambda, estados, alfabeto);
+        Map<String, CopyOnWriteArrayList<String>> mapaAFND = converteAFND(transicoes, hashLambda, estados, alfabeto);
 
         // tabela do AFND
-        converteAFD();
+        converteAFD(mapaAFND, "");
 
     }
 
