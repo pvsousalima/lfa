@@ -5,6 +5,7 @@
  */
 package lfa;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -306,19 +307,65 @@ public class AutomataParser {
             mapaAFND.put(key, l);
 //            System.out.println(key + "->" + l);
         }
-        System.out.println(mapaAFND);
+//        System.out.println(mapaAFND);
+    }
+
+    public void getConjunto() {
+
     }
 
     // converte para AFD
-    public void converteAFD(Map<String, CopyOnWriteArrayList<String>> mapaAFND, String estadoInicial) {
+    public void converteAFD(Map<String, CopyOnWriteArrayList<String>> mapaAFND, String alfabeto, ArrayList<String> fechoLambdaInicial) {
+
+        // conjunto alfabeto
+        String[] alfa = formateAlfabeto(alfabeto);
 
         // tira os elementos repetidos dos results do hash
         clearHashMap(mapaAFND);
 
+        // mapa do AFD
+        Map<String, CopyOnWriteArrayList> mapaAFD = new HashMap<>();
+
+        // a lista de estados
+        ArrayList<String> estados = new ArrayList<>();
+
+        // tag do estado inicial
+        StringBuilder tagInicial = new StringBuilder();
+        tagInicial.append("<");
+        for (String estado : fechoLambdaInicial) {
+            tagInicial.append(estado).append(",");
+        }
+        tagInicial.append(">");
+//        estados.add(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">"));
+
+        // para o estado inicial
+        for (String estado : fechoLambdaInicial) {
+
+            for (String palavra : alfa) {
+
+                CopyOnWriteArrayList<String> result = new CopyOnWriteArrayList<>();
+
+                if (!estado.isEmpty()) {
+
+                    for (String est : mapaAFND.get(estado + palavra)) {
+                        if (!est.isEmpty()) {
+                            result.add(est); // une as transicoes
+                        }
+                    }
+
+                    estados.add(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">"));
+                    mapaAFD.put(tagInicial.toString().replaceAll("\\<,", "<").replaceAll(",\\>", ">") + palavra, result);
+                }
+            }
+        }
+        System.out.println(estados);
+        System.out.println(mapaAFD);
+
+//        System.out.println(mapaAFD);
     }
 
-    // realiza movimentos
-    public void mount(String[] funcoes, String estados, String alfabeto) {
+    // monta o automato e extrai os movimentos/transicoes e realiza as conversoes posteriores
+    public void mount(String[] funcoes, String estados, String alfabeto, String estadoInicial) {
 
         // mapa das transicoes
         Map<String, String> transicoes = new HashMap<>();
@@ -341,7 +388,7 @@ public class AutomataParser {
         Map<String, CopyOnWriteArrayList<String>> mapaAFND = converteAFND(transicoes, hashLambda, estados, alfabeto);
 
         // tabela do AFND
-        converteAFD(mapaAFND, "");
+        converteAFD(mapaAFND, alfabeto, hashLambda.get(estadoInicial));
 
     }
 

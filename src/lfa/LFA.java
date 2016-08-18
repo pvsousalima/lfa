@@ -48,7 +48,7 @@ public class LFA {
             String[] estados = ap.getStates(automato);
 
             // monta o automato e extrai os dados e faz as conversoes  
-            ap.mount(estados, automato.get(0), automato.get(1));
+            ap.mount(estados, automato.get(0), automato.get(1), automato.get(3));
         }
 
     }
